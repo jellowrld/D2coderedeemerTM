@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Destiny 2 Auto Code Redeemer
-// @version      1.0
+// @version      1.1
 // @description  Automatically enters Destiny 2 codes, handles already redeemed errors, and proceeds to the next code.
 // @author       JellxWrld/JelloWrld/LiginSax
 // @match        https://www.bungie.net/7/en/codes/redeem
@@ -21,7 +21,7 @@
     "J6P-9YH-LLP", "993-H3H-M6K", "XMY-G9M-6XH", "HN3-7K9-93G", "VXN-V3T-MRP",
     "JND-HLR-L69", "A67-C7X-3GN", "9FY-KDD-PRT", "THR-33A-YKC", "3CV-D6K-RD4",
     "FMM-44A-RKP", "3J9-AMM-7MG", "PTD-GKG-CVN", "R9J-79M-J6C", "TK7-D3P-FDF",
-    "7MM-VPD-MHP", "RXC-9XJ-4MH"
+    "7MM-VPD-MHP", "RXC-9XJ-4MH", "D6T-3JR-CKX"
   ];
 
   let i = 0;
