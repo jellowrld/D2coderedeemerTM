@@ -1,14 +1,16 @@
 // ==UserScript==
-// @name         Destiny 2 Auto Code Redeemer
-// @version      1.1
-// @description  Automatically enters Destiny 2 codes, handles already redeemed errors, and proceeds to the next code.
-// @author       JellxWrld/JelloWrld/LiginSax
+// @name         Destiny 2 Auto Code Redeemer (With Resume/Reset)
+// @version      1.3
+// @description  Redeems Destiny 2 codes one-by-one, waits for error box to close, supports resume/reset progress using localStorage.
+// @author
 // @match        https://www.bungie.net/7/en/codes/redeem
 // @grant        none
 // ==/UserScript==
 
 (function () {
   'use strict';
+
+  const STORAGE_KEY = "d2_last_code_index";
 
   const d2codes = [
     "YRC-C3D-YNC", "7D4-PKR-MD7", "X9F-GMA-H6D", "XFV-KHP-N97", "A7L-FYC-44X",
@@ -24,8 +26,8 @@
     "7MM-VPD-MHP", "RXC-9XJ-4MH", "D6T-3JR-CKX"
   ];
 
-  let i = 0;
-  const delay = 2500;
+  let i = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
+  const delay = 1000;
 
   const popup = document.createElement("div");
   Object.assign(popup.style, {
@@ -34,7 +36,7 @@
     borderRadius: "8px", fontSize: "14px", fontFamily: "monospace",
     zIndex: 9999, boxShadow: "0 0 10px rgba(0, 255, 0, 0.4)"
   });
-  popup.textContent = "⏸️ Waiting to start...";
+  popup.textContent = `⏸️ Ready. Last Code Index: ${i}`;
   document.body.appendChild(popup);
 
   function updatePopup(msg) {
@@ -52,79 +54,115 @@
   });
   document.body.appendChild(startBtn);
 
-  function waitForErrorThenContinue() {
-    const errorCheck = setInterval(() => {
-      const errorTitle = document.querySelector('h3.CodesRedemptionForm_errorTitle__1wFhu');
-      const okayBtn = [...document.querySelectorAll('button')]
-        .find(btn => btn.textContent.trim().toUpperCase() === "OKAY");
+  const resetBtn = document.createElement("button");
+  resetBtn.textContent = "⛔ Reset Progress";
+  Object.assign(resetBtn.style, {
+    position: "fixed", bottom: "140px", right: "20px",
+    padding: "10px 16px", backgroundColor: "#800", color: "#fff",
+    border: "none", borderRadius: "8px", fontSize: "13px",
+    cursor: "pointer", zIndex: 9999,
+    boxShadow: "0 0 10px rgba(255,0,0,0.5)"
+  });
+  document.body.appendChild(resetBtn);
 
-      if (errorTitle && okayBtn) {
-        clearInterval(errorCheck);
-        updatePopup(`⚠️ Already Redeemed: ${d2codes[i]}`);
-        setTimeout(() => {
-          okayBtn.click();
-          i++;
-          setTimeout(enterCodeLoop, delay);
-        }, 500);
-      }
-    }, 500);
+  function waitForSelector(selector, timeout = 5000) {
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
+      const interval = setInterval(() => {
+        const el = document.querySelector(selector);
+        if (el) {
+          clearInterval(interval);
+          resolve(el);
+        } else if (Date.now() - start > timeout) {
+          clearInterval(interval);
+          reject(`Timeout waiting for ${selector}`);
+        }
+      }, 300);
+    });
   }
 
-  function enterCodeLoop() {
-    if (i >= d2codes.length) {
-      updatePopup("✅ All codes submitted!");
-      return;
-    }
+  function waitUntilGone(selector, timeout = 5000) {
+    return new Promise((resolve, reject) => {
+      const start = Date.now();
+      const interval = setInterval(() => {
+        const el = document.querySelector(selector);
+        if (!el) {
+          clearInterval(interval);
+          resolve();
+        } else if (Date.now() - start > timeout) {
+          clearInterval(interval);
+          reject(`Timeout waiting for ${selector} to disappear`);
+        }
+      }, 300);
+    });
+  }
 
+  async function redeemCode(code) {
     const input = document.querySelector('input[placeholder="XXX-XXX-XXX"]');
     if (!input) {
       updatePopup("❌ Input field not found.");
       return;
     }
 
-    const currentCode = d2codes[i];
-    updatePopup(`⏳ Redeeming: ${currentCode}`);
-
-    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-    nativeInputValueSetter.call(input, currentCode);
+    updatePopup(`⏳ Redeeming: ${code}`);
+    const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    nativeSetter.call(input, code);
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.dispatchEvent(new Event('change', { bubbles: true }));
 
-    const waitSubmit = setInterval(() => {
-      const submitBtn = [...document.querySelectorAll('button')]
-        .find(btn => btn.textContent.trim().toLowerCase() === "redeem" && !btn.disabled);
+    const submitBtn = [...document.querySelectorAll('button')]
+      .find(btn => btn.textContent.trim().toLowerCase() === "redeem" && !btn.disabled);
+    if (!submitBtn) {
+      updatePopup("❌ Submit button not found.");
+      return;
+    }
 
-      if (submitBtn) {
-        clearInterval(waitSubmit);
+    submitBtn.click();
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
-        setTimeout(() => {
-          submitBtn.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
-
-          // Check for ERROR popup while waiting for Redeem Another
-          waitForErrorThenContinue();
-
-          // Fallback to "Redeem Another Code" button
-          const waitReset = setInterval(() => {
-            const resetBtn = [...document.querySelectorAll('button')]
-              .find(btn => btn.textContent.toLowerCase().includes("redeem another"));
-
-            if (resetBtn) {
-              clearInterval(waitReset);
-              updatePopup(`✅ Redeemed: ${d2codes[i]}`);
-              resetBtn.click();
-              i++;
-              setTimeout(enterCodeLoop, delay);
-            }
-          }, 500);
-        }, 500);
+    const errorTitle = document.querySelector('h3.CodesRedemptionForm_errorTitle__1wFhu');
+    if (errorTitle) {
+      updatePopup(`⚠️ Already Redeemed: ${code}`);
+      const okayBtn = [...document.querySelectorAll('button')].find(btn => btn.textContent.trim().toUpperCase() === "OKAY");
+      if (okayBtn) okayBtn.click();
+      await waitUntilGone('h3.CodesRedemptionForm_errorTitle__1wFhu');
+    } else {
+      const resetBtn = await waitForSelector('button:contains("Redeem Another Code")').catch(() => null);
+      if (resetBtn) {
+        updatePopup(`✅ Redeemed: ${code}`);
+        resetBtn.click();
+      } else {
+        updatePopup(`✅ Possibly Redeemed: ${code}`);
       }
-    }, 500);
+    }
+
+    // Save progress
+    localStorage.setItem(STORAGE_KEY, i + 1);
+  }
+
+  async function startRedeeming() {
+    for (; i < d2codes.length; i++) {
+      try {
+        await redeemCode(d2codes[i]);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      } catch (err) {
+        updatePopup(`❌ Error on code ${d2codes[i]}: ${err}`);
+        break;
+      }
+    }
+    updatePopup("🎉 All codes processed!");
   }
 
   startBtn.addEventListener("click", () => {
     startBtn.disabled = true;
     startBtn.textContent = "⏳ Running...";
-    updatePopup("▶ Starting code redemption...");
-    setTimeout(enterCodeLoop, 1000);
+    updatePopup(`▶ Starting code redemption from index ${i}...`);
+    setTimeout(startRedeeming, 1000);
+  });
+
+  resetBtn.addEventListener("click", () => {
+    localStorage.removeItem(STORAGE_KEY);
+    i = 0;
+    updatePopup("🔁 Progress reset. Ready to start from beginning.");
   });
 })();
