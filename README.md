@@ -22,18 +22,6 @@
 
 ---
 
-## 📸 Screenshots
-
-### 🎯 Code Entry UI  
-<img src="https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/assets/code-popup.png" width="400"/>
-
-### 🛠️ Start/Reset Controls  
-<img src="https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/assets/buttons-ui.png" width="400"/>
-
-> **Note:** Replace the above image URLs with the actual paths in your GitHub repo under `/assets/`.
-
----
-
 ## 📦 Installation
 
 ### ✅ 1. Install a userscript manager:
