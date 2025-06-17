@@ -1,4 +1,4 @@
-# Destiny 2 Auto Code Redeemer Userscript
+# Destiny 2 Auto Code Redeemer Userscript - 73 Total Codes
 
 [![Userscript](https://img.shields.io/badge/userscript-install-green.svg?logo=greasemonkey)](https://www.bungie.net/7/en/codes/redeem)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
