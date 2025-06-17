@@ -1,8 +1,7 @@
 // ==UserScript==
 // @name         Destiny 2 Auto Code Redeemer (With Resume/Reset)
-// @version      1.3
-// @description  Redeems Destiny 2 codes one-by-one, waits for error box to close, supports resume/reset progress using localStorage.
-// @author
+// @version      1.4
+// @description  Redeems Destiny 2 codes one-by-one, handles success and errors, supports resume/reset using localStorage.
 // @match        https://www.bungie.net/7/en/codes/redeem
 // @grant        none
 // ==/UserScript==
@@ -13,18 +12,22 @@
   const STORAGE_KEY = "d2_last_code_index";
 
   const d2codes = [
-    "YRC-C3D-YNC", "7D4-PKR-MD7", "X9F-GMA-H6D", "XFV-KHP-N97", "A7L-FYC-44X",
-    "JDT-NLC-JKM", "N3L-XN6-PXF", "7CP-94V-LFP", "FJ9-LAM-67F", "7F9-767-F74",
-    "X4C-FGX-MX3", "JD7-4CM-HJG", "JNX-DMH-XLA", "3VF-LGC-RLX", "RA9-XPH-6KJ",
-    "JYN-JAA-Y7D", "7LV-GTK-T7J", "ML3-FD4-ND9", "HG7-YRG-HHF", "VHT-6A7-3MM",
-    "6AJ-XFR-9ND", "JVG-VNT-GGG", "9LX-7YC-6TX", "XVX-DKJ-CVM", "TNN-DKM-6LG",
-    "PHV-6LF-9CP", "6LJ-GH7-TPA", "L7T-CVV-3RD", "PKH-JL6-L4R", "D97-YCX-7JK",
-    "T67-JXY-PH6", "VA7-L7H-PNC", "F99-KPX-NCF", "YAA-37T-FCN", "XVK-RLA-RAM",
-    "J6P-9YH-LLP", "993-H3H-M6K", "XMY-G9M-6XH", "HN3-7K9-93G", "VXN-V3T-MRP",
-    "JND-HLR-L69", "A67-C7X-3GN", "9FY-KDD-PRT", "THR-33A-YKC", "3CV-D6K-RD4",
-    "FMM-44A-RKP", "3J9-AMM-7MG", "PTD-GKG-CVN", "R9J-79M-J6C", "TK7-D3P-FDF",
-    "7MM-VPD-MHP", "RXC-9XJ-4MH", "D6T-3JR-CKX"
-  ];
+  "3CV-D6K-RD4", "3DA-P4X-F6A", "3J9-AMM-7MG", "3VF-LGC-RLX", "473-MXR-3X9",
+  "69P-KRM-JJA", "69P-VCH-337", "69R-CKD-X7L", "69R-DDD-FCP", "69R-F99-AXG",
+  "69R-VL7-J6A", "69X-DJN-74V", "6A7-7NP-3X7", "6A9-DTG-YGN", "6AJ-XFR-9ND",
+  "6LJ-GH7-TPA", "7CP-94V-LFP", "7D4-PKR-MD7", "7F9-767-F74", "7LV-GTK-T7J",
+  "7MM-VPD-MHP", "993-H3H-M6K", "9FY-KDD-PRT", "9LX-7YC-6TX", "A67-C7X-3GN",
+  "D6T-3JR-CKX", "D97-YCX-7JK", "F99-KPX-NCF", "FJ9-LAM-67F", "FMM-44A-RKP",
+  "HC3-H44-DKC", "HDX-ALM-V4K", "HG7-YRG-HHF", "HN3-7K9-93G", "J6P-9YH-LLP",
+  "JD7-4CM-HJG", "JDT-NLC-JKM", "JGN-PX4-DFN", "JMR-LFN-4A3", "JND-HLR-L69",
+  "JNX-DMH-XLA", "JVG-VNT-GGG", "JYN-JAA-Y7D", "L3P-XXR-GJ4", "L7T-CVV-3RD",
+  "ML3-FD4-ND9", "MVD-4N3-NKH", "N3L-XN6-PXF", "PAH-JL6-L4R", "PHV-6LF-9CP",
+  "PKH-JL6-L4R", "PTD-GKG-CVN", "RA9-XPH-6KJ", "R9J-79M-J6C", "RXC-9XJ-4MH",
+  "T67-JXY-PH6", "TCN-HCD-TGY", "THR-33A-YKC", "TK7-D3P-FDF", "TNN-DKM-6LG",
+  "VA7-L7H-PNC", "VHT-6A7-3MM", "VXN-V3T-MRP", "X4C-FGX-MX3", "X9F-GMA-H6D",
+  "XFV-KHP-N97", "XMY-G9M-6XH", "XVK-RLA-RAM", "XVX-DKJ-CVM", "YAA-37T-FCN",
+  "YKA-RJG-MH9", "YRC-C3D-YNC"
+];
 
   let i = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
   const delay = 1000;
@@ -98,46 +101,54 @@
   }
 
   async function redeemCode(code) {
-    const input = document.querySelector('input[placeholder="XXX-XXX-XXX"]');
-    if (!input) {
-      updatePopup("❌ Input field not found.");
-      return;
-    }
+    try {
+      const input = await waitForSelector('input[placeholder="XXX-XXX-XXX"]', 5000);
+      updatePopup(`⏳ Redeeming: ${code}`);
 
-    updatePopup(`⏳ Redeeming: ${code}`);
-    const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-    nativeSetter.call(input, code);
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-    input.dispatchEvent(new Event('change', { bubbles: true }));
+      const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+      nativeSetter.call(input, code);
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
 
-    const submitBtn = [...document.querySelectorAll('button')]
-      .find(btn => btn.textContent.trim().toLowerCase() === "redeem" && !btn.disabled);
-    if (!submitBtn) {
-      updatePopup("❌ Submit button not found.");
-      return;
-    }
+      const redeemBtn = [...document.querySelectorAll('button')]
+        .find(btn => btn.textContent.trim().toLowerCase() === "redeem" && !btn.disabled);
 
-    submitBtn.click();
-    await new Promise((resolve) => setTimeout(resolve, 800));
-
-    const errorTitle = document.querySelector('h3.CodesRedemptionForm_errorTitle__1wFhu');
-    if (errorTitle) {
-      updatePopup(`⚠️ Already Redeemed: ${code}`);
-      const okayBtn = [...document.querySelectorAll('button')].find(btn => btn.textContent.trim().toUpperCase() === "OKAY");
-      if (okayBtn) okayBtn.click();
-      await waitUntilGone('h3.CodesRedemptionForm_errorTitle__1wFhu');
-    } else {
-      const resetBtn = await waitForSelector('button:contains("Redeem Another Code")').catch(() => null);
-      if (resetBtn) {
-        updatePopup(`✅ Redeemed: ${code}`);
-        resetBtn.click();
-      } else {
-        updatePopup(`✅ Possibly Redeemed: ${code}`);
+      if (!redeemBtn) {
+        updatePopup("❌ Submit button not found.");
+        return;
       }
-    }
 
-    // Save progress
-    localStorage.setItem(STORAGE_KEY, i + 1);
+      redeemBtn.click();
+      await new Promise(res => setTimeout(res, 1000));
+
+      const errorTitle = document.querySelector('h3.CodesRedemptionForm_errorTitle__1wFhu');
+      if (errorTitle) {
+        updatePopup(`⚠️ Already Redeemed or Invalid: ${code}`);
+        const okayBtn = [...document.querySelectorAll('button')]
+          .find(btn => btn.textContent.trim().toUpperCase() === "OKAY");
+
+        if (okayBtn) {
+          okayBtn.click();
+          await waitUntilGone('h3.CodesRedemptionForm_errorTitle__1wFhu', 5000);
+        }
+      } else {
+        await new Promise(res => setTimeout(res, 1000));
+        const redeemAnotherBtn = [...document.querySelectorAll('button')]
+          .find(btn => btn.textContent.trim() === "Redeem Another Code");
+
+        if (redeemAnotherBtn) {
+          updatePopup(`✅ Redeemed: ${code}`);
+          redeemAnotherBtn.click();
+          await new Promise(res => setTimeout(res, 1000));
+        } else {
+          updatePopup(`✅ Redeemed: ${code} (button not found)`);
+        }
+      }
+
+      localStorage.setItem(STORAGE_KEY, i + 1);
+    } catch (err) {
+      updatePopup(`❌ Error during code ${code}: ${err}`);
+    }
   }
 
   async function startRedeeming() {
