@@ -31,8 +31,9 @@
 
 ### ✅ 2. Add this script:
 - Click "New Script"
-- Paste the script from [`d2-auto-redeemer.user.js`](./d2-auto-redeemer.user.js)
+- Paste the script from [`/destiny2coderedeemer.user.js`](./destiny2coderedeemer.user.js)
 - Save and enable it
+- You might be able to install it also here https://github.com/jellowrld/D2coderedeemerTM/blob/main/destiny2coderedeemer.user.js
 
 ### ✅ 3. Go to:
 - [https://www.bungie.net/7/en/codes/redeem](https://www.bungie.net/7/en/codes/redeem)
