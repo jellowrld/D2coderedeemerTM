@@ -12,22 +12,25 @@
   const STORAGE_KEY = "d2_last_code_index";
 
   const d2codes = [
-    "3CV-D6K-RD4", "3DA-P4X-F6A", "3J9-AMM-7MG", "3VF-LGC-RLX", "473-MXR-3X9",
-    "69P-KRM-JJA", "69P-VCH-337", "69R-CKD-X7L", "69R-DDD-FCP", "69R-F99-AXG",
-    "69R-VL7-J6A", "69X-DJN-74V", "6A7-7NP-3X7", "6A9-DTG-YGN", "6AJ-XFR-9ND",
-    "6LJ-GH7-TPA", "7CP-94V-LFP", "7D4-PKR-MD7", "7F9-767-F74", "7LV-GTK-T7J",
-    "7MM-VPD-MHP", "993-H3H-M6K", "9FY-KDD-PRT", "9LX-7YC-6TX", "A67-C7X-3GN",
-    "A7L-FYC-44X", "D6T-3JR-CKX", "D97-YCX-7JK", "F99-KPX-NCF", "FJ9-LAM-67F",
-    "FMM-44A-RKP", "HC3-H44-DKC", "HDX-ALM-V4K", "HG7-YRG-HHF", "HN3-7K9-93G",
-    "J6P-9YH-LLP", "JD7-4CM-HJG", "JDT-NLC-JKM", "JGN-PX4-DFN", "JMR-LFN-4A3",
-    "JND-HLR-L69", "JNX-DMH-XLA", "JVG-VNT-GGG", "JYN-JAA-Y7D", "L3P-XXR-GJ4",
-    "L7T-CVV-3RD", "ML3-FD4-ND9", "MVD-4N3-NKH", "N3L-XN6-PXF", "PAH-JL6-L4R",
-    "PHV-6LF-9CP", "PKH-JL6-L4R", "PTD-GKG-CVN", "RA9-XPH-6KJ", "R9J-79M-J6C",
-    "RXC-9XJ-4MH", "T67-JXY-PH6", "TCN-HCD-TGY", "THR-33A-YKC", "TK7-D3P-FDF",
-    "TNN-DKM-6LG", "VA7-L7H-PNC", "VHT-6A7-3MM", "VXN-V3T-MRP", "X4C-FGX-MX3",
-    "X9F-GMA-H6D", "XFV-KHP-N97", "XMY-G9M-6XH", "XVK-RLA-RAM", "XVX-DKJ-CVM",
-    "YAA-37T-FCN", "YKA-RJG-MH9", "YRC-C3D-YNC"
-  ];
+  // Core active emblems, shaders, transmats & emotes (June 2026)
+  "3CV-D6K-RD4", "3DA-P4X-F6A", "3J9-AMM-7MG", "3VF-LGC-RLX", "473-MXR-3X9",
+  "69P-KRM-JJA", "69P-VCH-337", "69R-CKD-X7L", "69R-DDD-FCP", "69R-F99-AXG",
+  "69R-VL7-J6A", "69X-DJN-74V", "6A7-7NP-3X7", "6A9-DTG-YGN", "6AJ-XFR-9ND",
+  "6LJ-GH7-TPA", "7CP-94V-LFP", "7D4-PKR-MD7", "7F9-767-F74", "7LV-GTK-T7J",
+  "7MM-VPD-MHP", "933-H3H-M6K", "9FY-KDD-PRT", "9LX-7YC-6TX", "A67-C7X-3GN",
+  "A7L-FYC-44X", "D6T-3JR-CKX", "D97-YCX-7JK", "F99-KPX-NCF", "FJ9-LAM-67F",
+  "FMM-44A-RKP", "HC3-H44-DKC", "HDX-ALM-V4K", "HG7-YRG-HHF", "HN3-7K9-93G",
+  "J6P-9YH-LLP", "JA9-PRC-XKX", "JD7-4CM-HJG", "JDT-NLC-JKM", "JGN-PX4-DFN",
+  "JMR-LFN-4A3", "JND-HLR-L69", "JNX-DMH-XLA", "JVG-VNT-GGG", "JYN-JAA-Y7D",
+  "JXJ-HVA-RCX", "L3P-XXR-GJ4", "L7T-CVV-3RD", "ML3-FD4-ND9", "MVD-4N3-NKH",
+  "N3L-XN6-PXF", "PAH-JL6-L4R", "PFY-KDD-PRT", "PHV-6LF-9CP", "PKH-JL6-L4R",
+  "PTD-GKG-CVN", "RA9-XPH-6KJ", "R9J-79M-J6C", "RXC-9XJ-4MH", "T67-JXY-PH6",
+  "TCN-HCD-TGY", "THR-33A-YKC", "TK7-D3P-FDF", "TNN-DKM-6LG", "VA7-L7H-PNC",
+  "VHT-6A7-3MM", "VXN-V3T-MRP", "X4C-FGX-MX3", "X9F-GMA-H6D", "XFV-KHP-N97",
+  "XMY-G9M-6XH", "XVK-RLA-RAM", "XVX-DKJ-CVM", "YAA-37T-FCN", "YKA-RJG-MH9",
+  "YRC-C3D-YNC"
+  // Add brand-new ones here as they appear (TWID, Bungie socials, events)
+];
 
   let i = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
   const delay = 1000;
@@ -101,80 +104,98 @@
   }
 
   // Wait for success or error confirmation popup/button
-  function waitForResult(timeout = 8000) {
-    return new Promise((resolve) => {
-      const start = Date.now();
-      const interval = setInterval(() => {
-        const errorTitle = document.querySelector('h3.CodesRedemptionForm_errorTitle__1wFhu');
-        const redeemAnotherBtn = [...document.querySelectorAll('button')]
-          .find(btn => btn.textContent.trim() === "Redeem Another Code");
+  function waitForResult(timeout = 12000) {
+  return new Promise((resolve) => {
+    const start = Date.now();
+    const interval = setInterval(() => {
+      // Check for error modal title
+      const errorTitle = document.querySelector('h2.ConfirmationModal_modalTitle__tG9aj') ||
+                        document.querySelector('h3.CodesRedemptionForm_errorTitle__1wFhu');
 
-        if (errorTitle) {
-          clearInterval(interval);
-          resolve("error");
-        } else if (redeemAnotherBtn) {
-          clearInterval(interval);
-          resolve("success");
-        } else if (Date.now() - start > timeout) {
-          clearInterval(interval);
-          resolve("timeout");
-        }
-      }, 300);
-    });
-  }
+      // Check for success
+      const redeemAnotherBtn = [...document.querySelectorAll('button')]
+        .find(btn => btn.textContent.trim() === "Redeem Another Code");
+
+      if (errorTitle) {
+        clearInterval(interval);
+        resolve("error");
+      } else if (redeemAnotherBtn) {
+        clearInterval(interval);
+        resolve("success");
+      } else if (Date.now() - start > timeout) {
+        clearInterval(interval);
+        resolve("timeout");
+      }
+    }, 400);
+  });
+}
 
   async function redeemCode(code) {
-    try {
-      const input = await waitForSelector('input[placeholder="XXX-XXX-XXX"]', 5000);
-      updatePopup(`⏳ Redeeming: ${code}`);
+  try {
+    const input = await waitForSelector('input[placeholder="XXX-XXX-XXX"]', 5000);
+    updatePopup(`⏳ Redeeming: ${code}`);
 
-      // Set code input value properly
-      const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
-      nativeSetter.call(input, code);
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
+    // Set code input value properly
+    const nativeSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+    nativeSetter.call(input, code);
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
 
-      // Click Redeem button
-      const redeemBtn = [...document.querySelectorAll('button')]
-        .find(btn => btn.textContent.trim().toLowerCase() === "redeem" && !btn.disabled);
+    // Click Redeem button
+    const redeemBtn = [...document.querySelectorAll('button')]
+      .find(btn => btn.textContent.trim().toLowerCase().includes("redeem") && !btn.disabled);
 
-      if (!redeemBtn) {
-        updatePopup("❌ Submit button not found.");
-        return false;
-      }
-      redeemBtn.click();
-
-      // Wait for result
-      const result = await waitForResult(8000);
-      if (result === "error") {
-        updatePopup(`⚠️ Already Redeemed or Invalid: ${code}`);
-        const okayBtn = [...document.querySelectorAll('button')]
-          .find(btn => btn.textContent.trim().toUpperCase() === "OKAY");
-        if (okayBtn) {
-          okayBtn.click();
-          await waitUntilGone('h3.CodesRedemptionForm_errorTitle__1wFhu', 5000);
-        }
-      } else if (result === "success") {
-        updatePopup(`✅ Redeemed: ${code}`);
-        const redeemAnotherBtn = [...document.querySelectorAll('button')]
-          .find(btn => btn.textContent.trim() === "Redeem Another Code");
-        if (redeemAnotherBtn) {
-          redeemAnotherBtn.click();
-          await new Promise(res => setTimeout(res, 1000));
-        }
-      } else {
-        updatePopup(`❌ No confirmation received for code: ${code}. Retrying...`);
-        return false; // retry this code
-      }
-
-      localStorage.setItem(STORAGE_KEY, i + 1);
-      return true; // success or handled error, move on
-
-    } catch (err) {
-      updatePopup(`❌ Error during code ${code}: ${err}`);
-      return false; // retry
+    if (!redeemBtn) {
+      updatePopup("❌ Submit button not found.");
+      return false;
     }
+
+    redeemBtn.click();
+
+    // Wait for result (success or error)
+    const result = await waitForResult(12000); // longer timeout for modal
+
+    if (result === "error") {
+      updatePopup(`⚠️ Already Redeemed or Invalid: ${code}`);
+
+      // More robust OKAY button detection for the new modal
+      const okayBtn = [...document.querySelectorAll('button')]
+        .find(btn =>
+          btn.textContent.trim().toUpperCase() === "OKAY" ||
+          btn.getAttribute('labeloverride') === "OKAY"
+        );
+
+      if (okayBtn) {
+        updatePopup(`✅ Closing error modal for ${code}`);
+        okayBtn.click();
+
+        // Wait for modal to disappear (updated selector)
+        await waitUntilGone('.Modal_modalContent__k\\+em8', 6000);
+        await waitUntilGone('h2.ConfirmationModal_modalTitle__tG9aj', 4000);
+        await new Promise(res => setTimeout(res, 800)); // extra buffer
+      } else {
+        updatePopup("⚠️ OKAY button not found, continuing anyway...");
+      }
+    } else if (result === "success") {
+      updatePopup(`✅ Redeemed: ${code}`);
+      const redeemAnotherBtn = [...document.querySelectorAll('button')]
+        .find(btn => btn.textContent.trim() === "Redeem Another Code");
+      if (redeemAnotherBtn) {
+        redeemAnotherBtn.click();
+        await new Promise(res => setTimeout(res, 1200));
+      }
+    } else {
+      updatePopup(`❌ Timeout for ${code}. Retrying...`);
+      return false;
+    }
+
+    localStorage.setItem(STORAGE_KEY, (parseInt(i) + 1).toString());
+    return true;
+  } catch (err) {
+    updatePopup(`❌ Error during code ${code}: ${err.message || err}`);
+    return false;
   }
+}
 
   async function startRedeeming() {
     startBtn.disabled = true;
