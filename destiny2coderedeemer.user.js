@@ -12,7 +12,12 @@
   const STORAGE_KEY = "d2_last_code_index";
 
   const d2codes = [
-  // Core active emblems, shaders, transmats & emotes (June 2026)
+  // Deadlands Cosmetics + Recent Emblems (July 2026)
+  "3TG-G67-PYD", "6MC-A3F-X3R", "7AM-PJR-GMX", "7LD-PLJ-FN3", "9NG-KDD-PNG",
+  "FCX-P94-JCV", "VMG-HXK-VAL", "JRR-7YA-CCC", "J64-HYC-HTD", "F6K-D44-JH4",
+  "FPP-NHV-HNC", "FLK-TXG-P4A", "K9P-PVD-NR6", "M3L-7DA-67C", "MMX-3HF-CJ4",
+
+  // All other active universal codes
   "3CV-D6K-RD4", "3DA-P4X-F6A", "3J9-AMM-7MG", "3VF-LGC-RLX", "473-MXR-3X9",
   "69P-KRM-JJA", "69P-VCH-337", "69R-CKD-X7L", "69R-DDD-FCP", "69R-F99-AXG",
   "69R-VL7-J6A", "69X-DJN-74V", "6A7-7NP-3X7", "6A9-DTG-YGN", "6AJ-XFR-9ND",
@@ -29,7 +34,6 @@
   "VHT-6A7-3MM", "VXN-V3T-MRP", "X4C-FGX-MX3", "X9F-GMA-H6D", "XFV-KHP-N97",
   "XMY-G9M-6XH", "XVK-RLA-RAM", "XVX-DKJ-CVM", "YAA-37T-FCN", "YKA-RJG-MH9",
   "YRC-C3D-YNC"
-  // Add brand-new ones here as they appear (TWID, Bungie socials, events)
 ];
 
   let i = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
